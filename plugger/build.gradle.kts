@@ -47,14 +47,14 @@ dependencies {
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
 }
 
-publishing {
-    publications {
-        register<MavenPublication>("release") {
-            groupId = "tel.jeelpa"
-            artifactId = "plugger"
-            version = "1.0.0"
+afterEvaluate {
+    publishing {
+        publications {
+            register<MavenPublication>("release") {
+                groupId = "tel.jeelpa"
+                artifactId = "plugger"
+                version = "1.0.0"
 
-            afterEvaluate {
                 from(components["release"])
             }
         }
