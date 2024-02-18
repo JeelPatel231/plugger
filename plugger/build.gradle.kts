@@ -53,6 +53,10 @@ publishing {
             groupId = "tel.jeelpa"
             artifactId = "plugger"
             version = "1.0.0"
+
+            afterEvaluate {
+                from(components["release"])
+            }
         }
     }
 }
