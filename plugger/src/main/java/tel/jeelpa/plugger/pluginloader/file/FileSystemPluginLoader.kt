@@ -20,7 +20,7 @@ class FileSystemPluginLoader<TPlugin>(
     private fun loadAllPlugins(): List<TPlugin> {
         return (File(config.path, "plugins").listFiles() ?: emptyArray<File>())
             .map { it.path }
-            .filter { it.endsWith(".plug") }
+            .filter { it.endsWith(config.extension) }
             .map { filePluginManifestParser.parseManifest(it) }
             .map { loader(it) }
     }
