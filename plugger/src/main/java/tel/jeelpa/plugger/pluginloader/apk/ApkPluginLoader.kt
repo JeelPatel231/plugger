@@ -1,10 +1,12 @@
 package tel.jeelpa.plugger.pluginloader.apk
 
 import android.content.Context
+import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import android.os.Build
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
+import tel.jeelpa.plugger.ManifestParser
 import tel.jeelpa.plugger.PluginLoader
 import tel.jeelpa.plugger.PluginRepo
 import tel.jeelpa.plugger.models.PluginConfiguration
@@ -15,6 +17,7 @@ class ApkPluginLoader<TPlugin>(
     private val context: Context,
     private val configuration: PluginConfiguration,
     private val loader: PluginLoader = AndroidPluginLoader(context),
+    private val manifestParser: ManifestParser<ApplicationInfo> = ApkPluginManifestParser(configuration),
 ) : PluginRepo<TPlugin> {
 
     companion object {
@@ -27,9 +30,6 @@ class ApkPluginLoader<TPlugin>(
 
     }
 
-    // initialize class variables
-    private val apkManifestParser = ApkPluginManifestParser(configuration)
-
     private fun getStaticPlugins(): List<TPlugin> {
         return context.packageManager
             .getInstalledPackages(PACKAGE_FLAGS)
@@ -38,7 +38,7 @@ class ApkPluginLoader<TPlugin>(
                     featureInfo.name == configuration.featureName
                 }
             }
-            .map { apkManifestParser.parseManifest(it.applicationInfo) }
+            .map { manifestParser.parseManifest(it.applicationInfo) }
             .map { loader<TPlugin>(it) }
             .toList()
     }
