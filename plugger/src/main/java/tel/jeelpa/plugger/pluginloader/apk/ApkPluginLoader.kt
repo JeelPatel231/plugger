@@ -11,6 +11,8 @@ import tel.jeelpa.plugger.PluginLoader
 import tel.jeelpa.plugger.PluginRepo
 import tel.jeelpa.plugger.models.PluginConfiguration
 import tel.jeelpa.plugger.pluginloader.AndroidPluginLoader
+import tel.jeelpa.plugger.tryWith
+import java.lang.Exception
 
 
 class ApkPluginLoader<TPlugin>(
@@ -30,7 +32,7 @@ class ApkPluginLoader<TPlugin>(
 
     }
 
-    private fun getStaticPlugins(): List<TPlugin> {
+    private fun getStaticPlugins(exceptionHandler: (Exception) -> Unit): List<TPlugin> {
         return context.packageManager
             .getInstalledPackages(PACKAGE_FLAGS)
             .filter {
@@ -38,12 +40,20 @@ class ApkPluginLoader<TPlugin>(
                     featureInfo.name == configuration.featureName
                 }
             }
-            .map { manifestParser.parseManifest(it.applicationInfo) }
-            .map { loader<TPlugin>(it) }
+            .mapNotNull {
+                exceptionHandler.tryWith {
+                    manifestParser.parseManifest(it.applicationInfo)
+                }
+            }
+            .mapNotNull {
+                exceptionHandler.tryWith {
+                    loader<TPlugin>(it)
+                }
+            }
             .toList()
     }
 
     // TODO: Listen for app installation broadcasts and update flow on change
-    override fun getAllPlugins(): Flow<List<TPlugin>> =
-        flowOf(getStaticPlugins())
+    override fun getAllPlugins(exceptionHandler: (Exception) -> Unit): Flow<List<TPlugin>> =
+        flowOf(getStaticPlugins(exceptionHandler))
 }
