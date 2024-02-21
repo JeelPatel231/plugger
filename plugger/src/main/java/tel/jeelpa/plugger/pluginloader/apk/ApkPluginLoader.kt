@@ -9,13 +9,12 @@ import kotlinx.coroutines.flow.flowOf
 import tel.jeelpa.plugger.ManifestParser
 import tel.jeelpa.plugger.PluginLoader
 import tel.jeelpa.plugger.PluginRepo
-import tel.jeelpa.plugger.models.PluginConfiguration
 import tel.jeelpa.plugger.pluginloader.AndroidPluginLoader
 
 
 class ApkPluginLoader<TPlugin>(
     private val context: Context,
-    private val configuration: PluginConfiguration,
+    private val configuration: ApkPluginConfiguration,
     private val loader: PluginLoader = AndroidPluginLoader(context),
     private val manifestParser: ManifestParser<ApplicationInfo> = ApkPluginManifestParser(configuration),
 ) : PluginRepo<TPlugin> {
