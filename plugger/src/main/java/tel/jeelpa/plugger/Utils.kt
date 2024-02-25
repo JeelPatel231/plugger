@@ -16,3 +16,12 @@ fun Context.getClassLoader(path: String): DexClassLoader {
 inline fun <reified T> String.parsed(): T {
     return Json.decodeFromString<T>(this)
 }
+
+fun <T : Any> ((Exception) -> Unit).tryWith(block: () -> T?): T? {
+    return try {
+        block()
+    } catch (e: Exception) {
+        this.invoke(e)
+        null
+    }
+}
