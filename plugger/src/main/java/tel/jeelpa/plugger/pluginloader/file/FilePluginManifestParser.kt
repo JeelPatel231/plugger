@@ -3,13 +3,15 @@ package tel.jeelpa.plugger.pluginloader.file
 import android.content.Context
 import kotlinx.serialization.Serializable
 import tel.jeelpa.plugger.ManifestParser
-import tel.jeelpa.plugger.getClassLoader
 import tel.jeelpa.plugger.models.PluginMetadata
 import tel.jeelpa.plugger.parsed
+import tel.jeelpa.plugger.pluginloader.GetClassLoaderWithPathUseCase
 
 class FilePluginManifestParser(
-    private val context: Context
+    private val getClassLoader: GetClassLoaderWithPathUseCase
 ) : ManifestParser<String> {
+
+    constructor(context: Context): this(GetClassLoaderWithPathUseCase(context.classLoader))
 
     @Serializable
     data class FilePluginManifest(
@@ -17,7 +19,7 @@ class FilePluginManifestParser(
     )
 
     override fun parseManifest(data: String): PluginMetadata {
-        val manifestData = context.getClassLoader(data)
+        val manifestData = getClassLoader.getWithPath(data)
             .getResourceAsStream("manifest.json")
             .readBytes()
             .toString(Charsets.UTF_8)

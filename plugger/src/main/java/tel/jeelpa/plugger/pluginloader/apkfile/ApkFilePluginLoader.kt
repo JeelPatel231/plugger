@@ -21,8 +21,8 @@ class ApkFilePluginLoader<TPlugin>(
     private val filePluginLoader = FileSystemPluginLoader<TPlugin>(
         context = context,
         loader =  loader,
-        manifestParser = manifestParser,
         config = config.toFileConfig(),
+        manifestParser = manifestParser,
     )
 
     override fun getAllPlugins(): Flow<List<TPlugin>> =

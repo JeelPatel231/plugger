@@ -13,11 +13,17 @@ import tel.jeelpa.plugger.pluginloader.AndroidPluginLoader
 
 
 class ApkPluginLoader<TPlugin>(
-    private val context: Context,
+    private val packageManager: PackageManager,
     private val configuration: ApkPluginConfiguration,
-    private val loader: PluginLoader = AndroidPluginLoader(context),
+    private val loader: PluginLoader,
     private val manifestParser: ManifestParser<ApplicationInfo> = ApkPluginManifestParser(configuration),
 ) : PluginRepo<TPlugin> {
+
+    constructor(
+        context: Context,
+        configuration: ApkPluginConfiguration,
+        loader: PluginLoader = AndroidPluginLoader(context)
+    ): this(context.packageManager, configuration, loader)
 
     companion object {
 
@@ -30,8 +36,7 @@ class ApkPluginLoader<TPlugin>(
     }
 
     private fun getStaticPlugins(): List<TPlugin> {
-        return context.packageManager
-            .getInstalledPackages(PACKAGE_FLAGS)
+        return packageManager.getInstalledPackages(PACKAGE_FLAGS)
             .filter {
                 it.reqFeatures.orEmpty().any { featureInfo ->
                     featureInfo.name == configuration.featureName
