@@ -13,7 +13,7 @@ import java.io.File
 class FileSystemPluginLoader<TPlugin>(
     private val context: Context,
     private val config: FilePluginConfig,
-    private val loader: PluginLoader = AndroidPluginLoader(context),
+    private val loader: PluginLoader<TPlugin> = AndroidPluginLoader(context),
     private val manifestParser: ManifestParser<String> = FilePluginManifestParser(context)
 ) : PluginRepo<TPlugin> {
 

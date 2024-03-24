@@ -15,7 +15,7 @@ import tel.jeelpa.plugger.pluginloader.AndroidPluginLoader
 class ApkPluginLoader<TPlugin>(
     private val context: Context,
     private val configuration: ApkPluginConfiguration,
-    private val loader: PluginLoader = AndroidPluginLoader(context),
+    private val loader: PluginLoader<TPlugin> = AndroidPluginLoader(context),
     private val manifestParser: ManifestParser<ApplicationInfo> = ApkPluginManifestParser(configuration),
 ) : PluginRepo<TPlugin> {
 
@@ -38,7 +38,7 @@ class ApkPluginLoader<TPlugin>(
                 }
             }
             .map { runCatching { manifestParser.parseManifest(it.applicationInfo) } }
-            .map { runCatching { loader<TPlugin>(it.getOrThrow()) } }
+            .map { runCatching { loader(it.getOrThrow()) } }
             .toList()
     }
 
