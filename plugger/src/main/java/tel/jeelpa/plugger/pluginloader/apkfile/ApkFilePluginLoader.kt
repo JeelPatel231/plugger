@@ -25,7 +25,7 @@ class ApkFilePluginLoader<TPlugin>(
         config = config.toFileConfig(),
     )
 
-    override fun getAllPlugins(): Flow<List<TPlugin>> =
+    override fun getAllPlugins(): Flow<List<Result<TPlugin>>> =
         filePluginLoader.getAllPlugins()
 
 }

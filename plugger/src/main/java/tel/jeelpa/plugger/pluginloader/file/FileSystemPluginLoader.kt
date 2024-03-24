@@ -17,16 +17,16 @@ class FileSystemPluginLoader<TPlugin>(
     private val manifestParser: ManifestParser<String> = FilePluginManifestParser(context)
 ) : PluginRepo<TPlugin> {
 
-    private fun loadAllPlugins(): List<TPlugin> {
+    private fun loadAllPlugins(): List<Result<TPlugin>> {
         return (File(config.path, "plugins").listFiles() ?: emptyArray<File>())
             .map { it.path }
             .filter { it.endsWith(config.extension) }
-            .map { manifestParser.parseManifest(it) }
-            .map { loader(it) }
+            .map { runCatching { manifestParser.parseManifest(it) } }
+            .map { runCatching { loader(it.getOrThrow()) } }
     }
 
     // TODO: Listen for filesystem change broadcasts and update flow on change
-    override fun getAllPlugins(): Flow<List<TPlugin>> {
+    override fun getAllPlugins(): Flow<List<Result<TPlugin>>> {
         return flowOf(loadAllPlugins())
     }
 }

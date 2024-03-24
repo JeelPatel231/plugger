@@ -29,7 +29,7 @@ class ApkPluginLoader<TPlugin>(
 
     }
 
-    private fun getStaticPlugins(): List<TPlugin> {
+    private fun getStaticPlugins(): List<Result<TPlugin>> {
         return context.packageManager
             .getInstalledPackages(PACKAGE_FLAGS)
             .filter {
@@ -37,12 +37,12 @@ class ApkPluginLoader<TPlugin>(
                     featureInfo.name == configuration.featureName
                 }
             }
-            .map { manifestParser.parseManifest(it.applicationInfo) }
-            .map { loader<TPlugin>(it) }
+            .map { runCatching { manifestParser.parseManifest(it.applicationInfo) } }
+            .map { runCatching { loader<TPlugin>(it.getOrThrow()) } }
             .toList()
     }
 
     // TODO: Listen for app installation broadcasts and update flow on change
-    override fun getAllPlugins(): Flow<List<TPlugin>> =
+    override fun getAllPlugins(): Flow<List<Result<TPlugin>>> =
         flowOf(getStaticPlugins())
 }
