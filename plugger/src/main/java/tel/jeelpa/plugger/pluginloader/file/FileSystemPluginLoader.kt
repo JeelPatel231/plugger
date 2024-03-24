@@ -18,7 +18,7 @@ class FileSystemPluginLoader<TPlugin>(
 ) : PluginRepo<TPlugin> {
 
     private fun loadAllPlugins(): List<Result<TPlugin>> {
-        return (File(config.path, "plugins").listFiles() ?: emptyArray<File>())
+        return (File(config.path).listFiles() ?: emptyArray<File>())
             .map { it.path }
             .filter { it.endsWith(config.extension) }
             .map { runCatching { manifestParser.parseManifest(it) } }
