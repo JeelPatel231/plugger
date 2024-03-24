@@ -1,6 +1,8 @@
 package tel.jeelpa.plugger.pluginloader.apkfile
 
 import android.content.Context
+import android.os.Build
+import androidx.annotation.RequiresApi
 import kotlinx.coroutines.flow.Flow
 import tel.jeelpa.plugger.ManifestParser
 import tel.jeelpa.plugger.PluginLoader
@@ -8,6 +10,7 @@ import tel.jeelpa.plugger.PluginRepo
 import tel.jeelpa.plugger.pluginloader.AndroidPluginLoader
 import tel.jeelpa.plugger.pluginloader.file.FileSystemPluginLoader
 
+@RequiresApi(Build.VERSION_CODES.Q)
 class ApkFilePluginLoader<TPlugin>(
     private val context: Context,
     private val config: ApkFilePluginConfiguration,
