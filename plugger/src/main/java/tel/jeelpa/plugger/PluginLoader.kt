@@ -1,7 +1,5 @@
 package tel.jeelpa.plugger
 
-import tel.jeelpa.plugger.models.PluginMetadata
-
-interface PluginLoader<TPlugin> {
-    operator fun invoke(pluginMetadata: PluginMetadata): TPlugin
+interface PluginLoader<TMetadata, TPlugin> {
+    fun loadPlugin(pluginMetadata: TMetadata): TPlugin
 }

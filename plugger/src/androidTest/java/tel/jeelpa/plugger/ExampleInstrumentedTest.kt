@@ -10,8 +10,8 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import tel.jeelpa.plugger.models.PluginMetadata
-import tel.jeelpa.plugger.pluginloader.file.FilePluginConfig
-import tel.jeelpa.plugger.pluginloader.file.FileSystemPluginLoader
+import tel.jeelpa.plugger.models.PluginMetadataImpl
+import tel.jeelpa.plugger.pluginloader.file.FileSystemPluginSource
 import java.io.File
 
 /**
@@ -39,17 +39,18 @@ class ExampleInstrumentedTest {
     @Test
     fun shouldFireEvents(): Unit = runBlocking {
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
-
-        val config = FilePluginConfig(appContext.cacheDir.absolutePath, ".mock")
-        val mockLoader = object : PluginLoader<String> {
-            override fun invoke(pluginMetadata: PluginMetadata): String {
+        // TODO: throw exceptions in source, parser and loader
+        val path = appContext.cacheDir.absolutePath
+        val extension = ".mock"
+        val mockLoader = object : PluginLoader<PluginMetadata, String> {
+            override fun loadPlugin(pluginMetadata: PluginMetadata): String {
                 return pluginMetadata.path
             }
         }
 
-        val mockManifestParser = object : ManifestParser<String> {
-            override fun parseManifest(data: String): PluginMetadata {
-                return PluginMetadata("MockClassName", data)
+        val mockManifestParser = object : ManifestParser<File, PluginMetadata> {
+            override fun parseManifest(data: File): PluginMetadata {
+                return PluginMetadataImpl("MockClassName", data.path)
             }
         }
 
@@ -58,8 +59,8 @@ class ExampleInstrumentedTest {
 
         assertEquals(true, mockPluginFiles.all { it.createNewFile() })
 
-        val filesystemPluginLoader =
-            FileSystemPluginLoader(appContext, config, mockLoader, mockManifestParser)
+        val source = FileSystemPluginSource(path, extension)
+        val filesystemPluginLoader = PluginRepoImpl(source, mockManifestParser, mockLoader)
 
         filesystemPluginLoader.getAllPlugins().test {
             assertEquals(mockPluginFiles.map { it.absolutePath }, awaitItem().map { it.getOrThrow() })
