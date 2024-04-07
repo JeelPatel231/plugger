@@ -15,14 +15,14 @@ import tel.jeelpa.plugger.pluginloader.AndroidPluginLoader
 class ApkPluginLoader<TPlugin>(
     private val packageManager: PackageManager,
     private val configuration: ApkPluginConfiguration,
-    private val loader: PluginLoader,
+    private val loader: PluginLoader<TPlugin>,
     private val manifestParser: ManifestParser<ApplicationInfo> = ApkPluginManifestParser(configuration),
 ) : PluginRepo<TPlugin> {
 
     constructor(
         context: Context,
         configuration: ApkPluginConfiguration,
-        loader: PluginLoader = AndroidPluginLoader(context)
+        loader: PluginLoader<TPlugin> = AndroidPluginLoader(context)
     ): this(context.packageManager, configuration, loader)
 
     companion object {
@@ -35,19 +35,19 @@ class ApkPluginLoader<TPlugin>(
 
     }
 
-    private fun getStaticPlugins(): List<TPlugin> {
+    private fun getStaticPlugins(): List<Result<TPlugin>> {
         return packageManager.getInstalledPackages(PACKAGE_FLAGS)
             .filter {
                 it.reqFeatures.orEmpty().any { featureInfo ->
                     featureInfo.name == configuration.featureName
                 }
             }
-            .map { manifestParser.parseManifest(it.applicationInfo) }
-            .map { loader<TPlugin>(it) }
+            .map { runCatching { manifestParser.parseManifest(it.applicationInfo) } }
+            .map { runCatching { loader(it.getOrThrow()) } }
             .toList()
     }
 
     // TODO: Listen for app installation broadcasts and update flow on change
-    override fun getAllPlugins(): Flow<List<TPlugin>> =
+    override fun getAllPlugins(): Flow<List<Result<TPlugin>>> =
         flowOf(getStaticPlugins())
 }

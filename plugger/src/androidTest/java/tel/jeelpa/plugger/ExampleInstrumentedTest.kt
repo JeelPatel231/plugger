@@ -41,9 +41,9 @@ class ExampleInstrumentedTest {
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
 
         val config = FilePluginConfig(appContext.cacheDir.absolutePath, ".mock")
-        val mockLoader = object : PluginLoader {
-            override fun <TPlugin> invoke(pluginMetadata: PluginMetadata): TPlugin {
-                return pluginMetadata.path as TPlugin
+        val mockLoader = object : PluginLoader<String> {
+            override fun invoke(pluginMetadata: PluginMetadata): String {
+                return pluginMetadata.path
             }
         }
 
@@ -59,14 +59,14 @@ class ExampleInstrumentedTest {
         assertEquals(true, mockPluginFiles.all { it.createNewFile() })
 
         val filesystemPluginLoader =
-            FileSystemPluginLoader<String>(appContext, config, mockLoader, mockManifestParser)
+            FileSystemPluginLoader(appContext, config, mockLoader, mockManifestParser)
 
         filesystemPluginLoader.getAllPlugins().test {
-            assertEquals(mockPluginFiles.map { it.absolutePath }, awaitItem())
+            assertEquals(mockPluginFiles.map { it.absolutePath }, awaitItem().map { it.getOrThrow() })
 
             assertEquals(true, mockPluginFiles.take(3).all { it.delete() })
 
-            assertEquals(awaitItem(), mockPluginFiles.drop(3).map { it.absolutePath })
+            assertEquals(awaitItem().map { it.getOrThrow() }, mockPluginFiles.drop(3).map { it.absolutePath })
         }
     }
 }

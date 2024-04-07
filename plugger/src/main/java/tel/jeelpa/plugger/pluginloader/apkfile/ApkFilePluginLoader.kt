@@ -14,7 +14,7 @@ import tel.jeelpa.plugger.pluginloader.file.FileSystemPluginLoader
 class ApkFilePluginLoader<TPlugin>(
     private val context: Context,
     private val config: ApkFilePluginConfiguration,
-    private val loader: PluginLoader = AndroidPluginLoader(context),
+    private val loader: PluginLoader<TPlugin> = AndroidPluginLoader(context),
     private val manifestParser: ManifestParser<String> = ApkFilePluginManifestParser(context, config.toApkPluginConfig())
 ) : PluginRepo<TPlugin> {
 
@@ -28,7 +28,7 @@ class ApkFilePluginLoader<TPlugin>(
         manifestParser = manifestParser,
     )
 
-    override fun getAllPlugins(): Flow<List<TPlugin>> =
+    override fun getAllPlugins(): Flow<List<Result<TPlugin>>> =
         filePluginLoader.getAllPlugins()
 
 }
