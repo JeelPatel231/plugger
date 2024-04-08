@@ -63,11 +63,11 @@ class ExampleInstrumentedTest {
         val filesystemPluginLoader = PluginRepoImpl(source, mockManifestParser, mockLoader)
 
         filesystemPluginLoader.getAllPlugins().test {
-            assertEquals(mockPluginFiles.map { it.absolutePath }, awaitItem().map { it.getOrThrow() })
+            assertEquals(mockPluginFiles.map { it.absolutePath }, awaitItem().map { it.getOrThrow().second })
 
             assertEquals(true, mockPluginFiles.take(3).all { it.delete() })
 
-            assertEquals(awaitItem().map { it.getOrThrow() }, mockPluginFiles.drop(3).map { it.absolutePath })
+            assertEquals(awaitItem().map { it.getOrThrow().second }, mockPluginFiles.drop(3).map { it.absolutePath })
         }
     }
 }
