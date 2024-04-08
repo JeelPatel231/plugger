@@ -55,7 +55,7 @@ afterEvaluate {
             register<MavenPublication>("release") {
                 groupId = "tel.jeelpa"
                 artifactId = "plugger"
-                version = "1.0.0"
+                version = "SNAPSHOT"
 
                 from(components["release"])
             }
