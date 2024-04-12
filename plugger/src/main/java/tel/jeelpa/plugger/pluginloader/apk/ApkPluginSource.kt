@@ -1,7 +1,7 @@
 package tel.jeelpa.plugger.pluginloader.apk
 
 import android.content.Context
-import android.content.pm.PackageInfo
+import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import android.os.Build
 import kotlinx.coroutines.flow.Flow
@@ -12,7 +12,7 @@ import tel.jeelpa.plugger.PluginSource
 class ApkPluginSource(
     private val packageManager: PackageManager,
     private val featureName: String,
-) : PluginSource<PackageInfo> {
+) : PluginSource<ApplicationInfo> {
 
     constructor(
         context: Context,
@@ -29,16 +29,16 @@ class ApkPluginSource(
 
     }
 
-    private fun getStaticPackages(): List<PackageInfo> {
+    private fun getStaticPackages(): List<ApplicationInfo> {
         return packageManager.getInstalledPackages(PACKAGE_FLAGS)
             .filter {
                 it.reqFeatures.orEmpty().any { featureInfo ->
                     featureInfo.name == featureName
                 }
-            }
+            }.map { it.applicationInfo }
     }
 
     // TODO: Listen for app installation broadcasts and update flow on change
-    override fun getSourceFiles(): Flow<List<PackageInfo>> =
+    override fun getSourceFiles(): Flow<List<ApplicationInfo>> =
         flowOf(getStaticPackages())
 }
