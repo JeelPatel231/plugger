@@ -11,6 +11,8 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 
 /**
+ * https://github.com/Kotlin/kotlinx.coroutines/issues/2631#issuecomment-1162673773
+ *
  * Does not produce the same value in a raw, so respect "distinct until changed emissions"
  * */
 class DerivedStateFlow<T>(
