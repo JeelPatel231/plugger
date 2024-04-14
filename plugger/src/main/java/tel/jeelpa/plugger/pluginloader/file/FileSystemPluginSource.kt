@@ -3,8 +3,8 @@ package tel.jeelpa.plugger.pluginloader.file
 import android.os.Build
 import android.os.FileObserver
 import androidx.annotation.RequiresApi
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import tel.jeelpa.plugger.PluginSource
 import java.io.File
@@ -37,5 +37,6 @@ class FileSystemPluginSource(
         fsEventsListener.startWatching()
     }
 
-    override fun getSourceFiles(): Flow<List<File>> = pluginStateFlow.asStateFlow()
+    override fun getSourceFiles(): StateFlow<List<File>> =
+        pluginStateFlow.asStateFlow()
 }

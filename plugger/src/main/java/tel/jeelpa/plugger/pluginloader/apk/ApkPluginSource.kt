@@ -4,8 +4,9 @@ import android.content.Context
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import android.os.Build
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import tel.jeelpa.plugger.PluginSource
 
 
@@ -38,7 +39,9 @@ class ApkPluginSource(
             }.map { it.applicationInfo }
     }
 
+    private val loadedPlugins = MutableStateFlow(getStaticPackages())
+
     // TODO: Listen for app installation broadcasts and update flow on change
-    override fun getSourceFiles(): Flow<List<ApplicationInfo>> =
-        flowOf(getStaticPackages())
+    override fun getSourceFiles(): StateFlow<List<ApplicationInfo>> =
+        loadedPlugins.asStateFlow()
 }

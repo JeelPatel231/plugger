@@ -5,11 +5,11 @@ import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import android.os.Build
 import androidx.annotation.RequiresApi
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.StateFlow
 import tel.jeelpa.plugger.PluginSource
 import tel.jeelpa.plugger.pluginloader.apk.ApkPluginSource
 import tel.jeelpa.plugger.pluginloader.file.FileSystemPluginSource
+import tel.jeelpa.plugger.utils.mapState
 import java.io.File
 
 @RequiresApi(Build.VERSION_CODES.Q)
@@ -30,8 +30,8 @@ class ApkFilePluginSource(
     // here we parse Manifest.xml instead of manifest.json
     private val filePluginLoader = FileSystemPluginSource(folder, extension)
 
-    override fun getSourceFiles(): Flow<List<ApplicationInfo>> =
-        filePluginLoader.getSourceFiles().map { fileList ->
+    override fun getSourceFiles(): StateFlow<List<ApplicationInfo>> =
+        filePluginLoader.getSourceFiles().mapState { fileList ->
             fileList.map {
                 packageManager
                     .getPackageArchiveInfo(it.path, ApkPluginSource.PACKAGE_FLAGS)

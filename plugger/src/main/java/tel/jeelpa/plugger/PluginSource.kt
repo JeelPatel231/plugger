@@ -1,7 +1,7 @@
 package tel.jeelpa.plugger
 
-import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.StateFlow
 
 interface PluginSource<TSourceInput> {
-    fun getSourceFiles() : Flow<List<TSourceInput>>
+    fun getSourceFiles() : StateFlow<List<TSourceInput>>
 }
